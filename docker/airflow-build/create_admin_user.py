@@ -1,16 +1,12 @@
-import airflow
 from airflow import models, settings
 from airflow.contrib.auth.backends.password_auth import PasswordUser
-import configparser
-
-config = configparser.ConfigParser()
-config.read('build.ini')
+import sys
 
 user = PasswordUser(models.User())
-user.username = config['AIRFLOW_SETTINGS']['AIRFLOW_ADMIN_USER']
-user.email = config['AIRFLOW_SETTINGS']['AIRFLOW_ADMIN_PASSWORD']
+user.username = sys.argv[1].strip()
+user.email = sys.argv[3].strip()
 user.superuser = True
-user.password = config['AIRFLOW_SETTINGS']['AIRFLOW_ADMIN_PASSWORD']
+user.password = sys.argv[2].strip()
 session = settings.Session()
 session.add(user)
 session.commit()

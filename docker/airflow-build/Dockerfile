@@ -42,21 +42,23 @@ COPY ./constraints-3.8.txt /constraints-3.8.txt
 RUN pip install --upgrade pip && \
     useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow && \
     pip install apache-airflow[password,slack,crypto,postgres,docker]==${AIRFLOW_VERSION} --constraint /constraints-3.8.txt
- #   pip install apache-airflow[telegram,crypto,celery,postgres,kubernetes,docker]==${AIRFLOW_VERSION} --constraint /requirements-python3.8.txt
+
 
 # packages needed for dags
 RUN pip install python-dotenv && \
     pip install flask-bcrypt && \
     pip install scikit-learn
 
+RUN apt-get install gettext-base
+
 # cfgs needed for dags
 COPY ./logger_cfg.yml ${AIRFLOW_HOME}/logger_cfg.yml
+COPY ./airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
+RUN chmod 777 ${AIRFLOW_HOME}/logger_cfg.yml
+RUN chmod 777 ${AIRFLOW_HOME}/airflow.cfg
 
 # Copy the entrypoint.sh from host to container (at path AIRFLOW_HOME)
 COPY ./entrypoint.sh ./entrypoint.sh
-
-COPY ./create_admin_user.py ./create_admin_user.py
-COPY ../cfg/build.cfg ./cfg/build.cfg
 
 # Set the entrypoint.sh file to be executable
 RUN chmod +x ./entrypoint.sh
@@ -70,6 +72,8 @@ USER airflow
 # Set workdir (it's like a cd inside the container)
 WORKDIR ${AIRFLOW_HOME}
 
+COPY ./create_admin_user.py ./create_admin_user.py
+COPY ./cfg_parser.py ./cfg_parser.py
 # Create the dags folder which will contain the DAGs
 RUN mkdir dags
 
@@ -77,6 +81,5 @@ RUN mkdir dags
 EXPOSE 8080
 
 # Execute the entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
 
-    
+ENTRYPOINT /entrypoint.sh
