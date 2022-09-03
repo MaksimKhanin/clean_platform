@@ -72,7 +72,6 @@ USER airflow
 # Set workdir (it's like a cd inside the container)
 WORKDIR ${AIRFLOW_HOME}
 
-COPY ./create_admin_user.py ./create_admin_user.py
 COPY ./cfg_parser.py ./cfg_parser.py
 # Create the dags folder which will contain the DAGs
 RUN mkdir dags
