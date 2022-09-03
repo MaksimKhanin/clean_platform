@@ -52,9 +52,7 @@ RUN pip install python-dotenv && \
 RUN apt-get install gettext-base
 
 # cfgs needed for dags
-COPY ./logger_cfg.yml ${AIRFLOW_HOME}/logger_cfg.yml
 COPY ./airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
-RUN chmod 777 ${AIRFLOW_HOME}/logger_cfg.yml
 RUN chmod 777 ${AIRFLOW_HOME}/airflow.cfg
 
 # Copy the entrypoint.sh from host to container (at path AIRFLOW_HOME)
